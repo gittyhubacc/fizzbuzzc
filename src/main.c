@@ -30,7 +30,7 @@ int write_output(int argc, char **argv, program_output output)
 int main(int argc, char **argv)
 {
         if (argc < 2) {
-                printf("USAGE: %s [fizzbuzz program]\n", argv[0]);
+                printf("USAGE: %s [fzzbzz program]\n", argv[0]);
                 return 1;
         }
 

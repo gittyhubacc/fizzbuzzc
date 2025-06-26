@@ -2,7 +2,7 @@ CC := clang
 CFLAGS := -g -O0 -Wno-int-to-void-pointer-cast -Wno-void-pointer-to-int-cast
 LDFLAGS := -lcirces -lmf
 
-BIN_NAME := fizzbuzzc
+BIN_NAME := fzzbzzc
 
 SRC_DIR := ./src
 BIN_DIR := ./bin
