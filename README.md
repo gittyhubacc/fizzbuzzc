@@ -1,7 +1,7 @@
 [wikipedia]: https://en.wikipedia.org/wiki/Fizz_buzz
 
-# fizzbuzzc
-This is a compiler for "fizzbuzz", a dsl for creating programs that behave [fizzbuzzishly][wikipedia]. With fizzbuzz, writing fizzbuzzing programs has never been eaiser(?). Fizzbuzz's grammar can be seen in the form used to generate it's parser in `parser.c`. Here's my informal description of fizzbuzz's grammar:
+# fzzbzzc
+This is a compiler for "fzzbzz", a dsl for creating programs that behave [fizzbuzzishly][wikipedia]. With fzzbzz, writing fizzbuzzing programs has never been eaiser(?). Fzzbzz's grammar can be seen in the form used to generate it's parser in `parser.c`. Here's my informal description of fzzbzz's grammar:
 ```
 # lhs is a terminal symbol,
 # produced during lexical analysis by the rhs regular expression
