@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include <circes.h>
 #include <mf/list.h>
+#include <stdio.h>
 
 static nfa int_nfa;
 static nfa string_nfa;
@@ -21,8 +22,8 @@ void lex_init(arena *a)
 
         nfa digits = nfa_union(a, nat_digits, *nfa_builtin(S("0")));
 
-        nfa lowercase = *nfa_builtin(S("a"));
-        lowercase = nfa_union(a, lowercase, *nfa_builtin(S("b")));
+        nfa lowercase =
+            nfa_union(a, *nfa_builtin(S("a")), *nfa_builtin(S("b")));
         lowercase = nfa_union(a, lowercase, *nfa_builtin(S("c")));
         lowercase = nfa_union(a, lowercase, *nfa_builtin(S("d")));
         lowercase = nfa_union(a, lowercase, *nfa_builtin(S("e")));
@@ -75,11 +76,12 @@ void lex_init(arena *a)
         uppercase = nfa_union(a, uppercase, *nfa_builtin(S("Y")));
         uppercase = nfa_union(a, uppercase, *nfa_builtin(S("Z")));
 
-        nfa alpha = nfa_union(a, lowercase, uppercase);
+        nfa space = *nfa_builtin(S(" "));
+        nfa alpha = nfa_union(a, space, nfa_union(a, lowercase, uppercase));
         nfa alphanumeric = nfa_union(a, alpha, digits);
 
-        int_nfa = nfa_union(a, nat_digits, nfa_close(a, digits));
-        string_nfa = nfa_union(a, alpha, nfa_close(a, alphanumeric));
+        int_nfa = nfa_close(a, digits);
+        string_nfa = nfa_close(a, alphanumeric);
 }
 
 static token *emit_nfa_token(arena *a, nfa n, string input, int *i)
@@ -87,12 +89,15 @@ static token *emit_nfa_token(arena *a, nfa n, string input, int *i)
         token *t = make(a, token, 1);
         string substr = {.len = 1, .addr = input.addr + (*i)};
         while (nfa_test(a, n, substr)) {
+                // printf("passed '%.*s', next '%c'\n", substr.len, substr.addr,
+                // substr.addr[substr.len]);
                 substr.len++;
                 (*i)++;
         }
         t->sdata.len = --substr.len;
         t->sdata.addr = make(a, char, t->sdata.len);
         mfmemcpy(t->sdata.addr, substr.addr, t->sdata.len);
+        // printf("%.*s\n", t->sdata.len, t->sdata.addr);
         return t;
 }
 
@@ -131,10 +136,12 @@ static token *emit_token(arena *a, string input, int *i)
         sample.len = 1;
         sample.addr = input.addr + (--*i);
         if (nfa_test(a, int_nfa, sample)) {
+                // printf("hit int nfa: '%.*s'\n", sample.len, sample.addr);
                 t = emit_nfa_token(a, int_nfa, input, i);
                 t->type = TTOK_INT;
                 return t;
         } else if (nfa_test(a, string_nfa, sample)) {
+                // printf("hit string nfa: '%.*s'\n", sample.len, sample.addr);
                 t = emit_nfa_token(a, string_nfa, input, i);
                 t->type = TTOK_STRING;
                 return t;
